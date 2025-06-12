@@ -1,0 +1,117 @@
+User Registration & Login
+
+JWT-based authentication.
+
+Basic user profile management.
+
+Expense Tracker
+
+Add/edit/delete transactions.
+
+Tag categories: Food, Transport, Bills, etc.
+
+Monthly budget vs. spending charts (using Chart.js or Recharts).
+
+AI-Powered Insights
+
+Summarize monthly spending.
+
+Suggest tips like:
+
+“You're spending 25% on food; consider cooking at home more.”
+
+“You’re consistently overspending on transport.”
+
+Dark Mode
+
+Theme switcher using Tailwind or CSS variables.
+
+ Project Folder Structure
+bash
+Copy
+Edit
+budget-tracker-ai/
+│
+├── client/               # React frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/   # Navbar, Modals, etc.
+│   │   ├── pages/        # Dashboard, Login, Register
+│   │   ├── utils/        # API functions, formatting
+│   │   └── App.jsx
+│   └── tailwind.config.js
+│
+├── server/               # Node.js backend
+│   ├── controllers/      # Auth, Expense, AI
+│   ├── models/           # User.js, Expense.js
+│   ├── routes/           # /api/auth, /api/expenses, /api/ai
+│   ├── middleware/       # Auth middleware
+│   └── server.js
+│
+├── .env
+├── README.md
+└── package.json
+📄 Sample Backend Code (Express Route + AI Insight)
+js
+Copy
+Edit
+// routes/ai.js
+const express = require('express');
+const router = express.Router();
+const { Configuration, OpenAIApi } = require('openai');
+
+const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
+
+router.post('/insights', async (req, res) => {
+  const { expenses } = req.body;
+
+  const prompt = `Analyze this list of expenses and provide financial advice:\n${JSON.stringify(expenses)}`;
+
+  try {
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }]
+    });
+    res.json({ advice: response.data.choices[0].message.content });
+  } catch (err) {
+    res.status(500).json({ error: 'OpenAI error', details: err.message });
+  }
+});
+
+module.exports = router;
+ Frontend Code Snippet (React + Axios)
+jsx
+Copy
+Edit
+// utils/api.js
+import axios from 'axios';
+
+export const getInsights = async (expenses) => {
+  const res = await axios.post('/api/ai/insights', { expenses });
+  return res.data.advice;
+};
+GitHub README.md (Short Version)
+markdown
+Copy
+Edit
+#  AI Budget Tracker
+
+Track your spending and get personalized financial advice powered by OpenAI.
+
+## Features
+- User login/registration
+- Add, edit, and categorize expenses
+- Monthly charts and budgeting tools
+- AI-powered money-saving tips
+
+## Tech Stack
+React, Node.js, MongoDB, OpenAI API
+
+## Running Locally
+
+```bash
+# Backend
+cd server && npm install && npm run dev
+
+# Frontend
+cd client && npm install && npm start
